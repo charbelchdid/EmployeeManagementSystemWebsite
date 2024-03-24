@@ -1,0 +1,4 @@
+services:
+  - name: employee-management-system
+    env: docker
+    buildCommand: npm install && npm run build
