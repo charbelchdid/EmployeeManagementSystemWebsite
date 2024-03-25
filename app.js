@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { getTasksByEmployee, addTaskForEmployee, updateTaskForEmployee, deleteTaskForEmployee } = require('./tasks');
+const { getAllEmployees } = require('./employees');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -52,6 +53,16 @@ app.delete('/tasks/:taskRowguid', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+app.get('/employees', async (req, res) => {
+    try {
+        const employees = await getAllEmployees();
+        res.json(employees);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
