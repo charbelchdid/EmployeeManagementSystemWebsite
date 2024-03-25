@@ -10,5 +10,42 @@ async function getAllEmployees() {
         throw error;
     }
 }
+async function addEmployee(employee) {
+    const { name, email, department, age, gender } = employee;
+    try {
+        const result = await client.query(
+            'INSERT INTO employee (employee_name, email, department, age, gender) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [name, email, department, age, gender]
+        );
+        return result.rows[0];
+    } catch (error) {
+        console.error('Error adding new employee:', error);
+        throw error;
+    }
+}
 
-module.exports = { getAllEmployees };
+async function updateEmployee(rowguid, updatedEmployee) {
+    const { name, email, department, age, gender } = updatedEmployee;
+    try {
+        const result = await client.query(
+            'UPDATE employee SET employee_name = $1, email = $2, department = $3, age = $4, gender = $5 WHERE rowguid = $6 RETURNING *',
+            [name, email, department, age, gender, rowguid]
+        );
+        return result.rows[0];
+    } catch (error) {
+        console.error('Error updating employee:', error);
+        throw error;
+    }
+}
+
+async function deleteEmployee(rowguid) {
+    try {
+        const result = await client.query('DELETE FROM employee WHERE rowguid = $1 RETURNING *', [rowguid]);
+        return result.rows[0];
+    } catch (error) {
+        console.error('Error deleting employee:', error);
+        throw error;
+    }
+}
+
+module.exports = { getAllEmployees, addEmployee, updateEmployee, deleteEmployee };
