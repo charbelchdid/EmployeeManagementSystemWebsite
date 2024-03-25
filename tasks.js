@@ -1,9 +1,9 @@
-const pool = require('./db'); // Import the connection pool
+const client = require('./db'); // Import the PostgreSQL client
 
 // Get all tasks
 async function getAllTasks() {
     try {
-        const result = await pool.query('SELECT * FROM tasks');
+        const result = await client.query('SELECT * FROM tasks');
         return result.rows;
     } catch (error) {
         console.error('Error fetching tasks:', error);
@@ -14,7 +14,7 @@ async function getAllTasks() {
 // Add a new task
 async function addTask(title, description, status) {
     try {
-        const result = await pool.query('INSERT INTO tasks (title, description, status) VALUES ($1, $2, $3) RETURNING *', [title, description, status]);
+        const result = await client.query('INSERT INTO tasks (title, description, status) VALUES ($1, $2, $3) RETURNING *', [title, description, status]);
         return result.rows[0];
     } catch (error) {
         console.error('Error adding task:', error);
@@ -25,7 +25,7 @@ async function addTask(title, description, status) {
 // Update a task
 async function updateTask(id, title, description, status) {
     try {
-        const result = await pool.query('UPDATE tasks SET title = $2, description = $3, status = $4 WHERE id = $1 RETURNING *', [id, title, description, status]);
+        const result = await client.query('UPDATE tasks SET title = $2, description = $3, status = $4 WHERE id = $1 RETURNING *', [id, title, description, status]);
         return result.rows[0];
     } catch (error) {
         console.error('Error updating task:', error);
@@ -36,7 +36,7 @@ async function updateTask(id, title, description, status) {
 // Delete a task
 async function deleteTask(id) {
     try {
-        const result = await pool.query('DELETE FROM tasks WHERE id = $1 RETURNING *', [id]);
+        const result = await client.query('DELETE FROM tasks WHERE id = $1 RETURNING *', [id]);
         return result.rows[0];
     } catch (error) {
         console.error('Error deleting task:', error);
