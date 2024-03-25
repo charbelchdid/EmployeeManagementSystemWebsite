@@ -47,5 +47,15 @@ async function deleteEmployee(rowguid) {
         throw error;
     }
 }
+async function getEmployeeByRowguid(rowguid) {
+    try {
+        const result = await client.query('SELECT * FROM employee WHERE rowguid = $1', [rowguid]);
+        return result.rows[0]; // Assuming rowguid is unique, this returns the specific employee
+    } catch (error) {
+        console.error('Error fetching employee by rowguid:', error);
+        throw error;
+    }
+}
 
-module.exports = { getAllEmployees, addEmployee, updateEmployee, deleteEmployee };
+
+module.exports = { getAllEmployees, addEmployee, updateEmployee, deleteEmployee, getEmployeeByRowguid };

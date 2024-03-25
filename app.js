@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { getTasksByEmployee, addTaskForEmployee, updateTaskForEmployee, deleteTaskForEmployee } = require('./tasks');
-const { getAllEmployees, addEmployee, updateEmployee, deleteEmployee } = require('./employees');
+const { getAllEmployees, addEmployee, updateEmployee, deleteEmployee,getEmployeeByRowguid } = require('./employees');
 
 
 const app = express();
@@ -92,6 +92,21 @@ app.delete('/employees/:rowguid', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+app.get('/employees/:rowguid', async (req, res) => {
+    const { rowguid } = req.params;
+    try {
+        const employee = await getEmployeeByRowguid(rowguid);
+        if(employee) {
+            res.json(employee);
+        } else {
+            res.status(404).json({ message: 'Employee not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
