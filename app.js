@@ -2,15 +2,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { getTasksByEmployee, addTaskForEmployee, updateTaskForEmployee, deleteTaskForEmployee } = require('./tasks');
 const { getAllEmployees, addEmployee, updateEmployee, deleteEmployee,getEmployeeByRowguid } = require('./employees');
-
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 3000;
+app.use(cors())
 
 app.use(bodyParser.json());
 
 // Route to get all tasks for a specific employee
-app.get('/employees/:employeeRowguid/tasks', async (req, res) => {
+app.get('/employees/:employeeRowguid/tasks',  async(req, res) => {
     const { employeeRowguid } = req.params;
     try {
         const tasks = await getTasksByEmployee(employeeRowguid);
