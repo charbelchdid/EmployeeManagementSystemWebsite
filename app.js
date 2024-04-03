@@ -22,27 +22,36 @@ app.get('/employees/:employeeRowguid/tasks', async (req, res) => {
 
 // Route to add a new task for a specific employee
 app.post('/employees/:employeeRowguid/tasks', async (req, res) => {
+    const { title, description, deadline, type } = req.body;
     const { employeeRowguid } = req.params;
-    const { title, description, status } = req.body;
     try {
-        const task = await addTaskForEmployee(employeeRowguid, title, description, status);
-        res.status(201).json(task);
+        const newTask = await addTaskForEmployee(employeeRowguid, title, description, deadline, type);
+        res.status(201).json(newTask);
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Failed to add new task:', error);
+        res.status(500).json({ error: 'Failed to add new task' });
     }
 });
 
+
 // Route to update a task
-app.put('/tasks/:taskRowguid', async (req, res) => {
-    const { taskRowguid } = req.params;
-    const { title, description, status } = req.body;
+// Assuming a route for updating a task looks something like this
+app.put('/tasks/:taskId', async (req, res) => {
+    const { taskId } = req.params;
+    const { title, description, deadline, type } = req.body;
     try {
-        const task = await updateTaskForEmployee(taskRowguid, title, description, status);
-        res.json(task);
+        const updatedTask = await updateTaskForEmployee(taskId, title, description, deadline, type);
+        if (updatedTask) {
+            res.json(updatedTask);
+        } else {
+            res.status(404).json({ error: 'Task not found' });
+        }
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Failed to update task:', error);
+        res.status(500).json({ error: 'Failed to update task' });
     }
 });
+
 
 // Route to delete a task
 app.delete('/tasks/:taskRowguid', async (req, res) => {

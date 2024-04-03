@@ -12,11 +12,12 @@ async function getTasksByEmployee(employeeRowguid) {
 }
 
 // Add a new task for a specific employee
-async function addTaskForEmployee(employeeRowguid, title, description, status) {
+// Updated addTaskForEmployee function to include deadline and type
+async function addTaskForEmployee(employeeRowguid, title, description, deadline, type) {
     try {
         const result = await client.query(
-            'INSERT INTO tasks (employee_rowguid, title, description, status, rowguid) VALUES ($1, $2, $3, $4, uuid_generate_v4()) RETURNING *', 
-            [employeeRowguid, title, description, status]
+            'INSERT INTO tasks (title, description, deadline, type, employee_rowguid) VALUES ($1, $2, $3, $4, $5) RETURNING *', 
+            [title, description, deadline, type, employeeRowguid]
         );
         return result.rows[0];
     } catch (error) {
@@ -25,19 +26,20 @@ async function addTaskForEmployee(employeeRowguid, title, description, status) {
     }
 }
 
-// Update a task for a specific employee
-async function updateTaskForEmployee(taskRowguid, title, description, status) {
+// Assuming an updateTaskForEmployee function exists and needs updating
+async function updateTaskForEmployee(taskId, title, description, deadline, type) {
     try {
         const result = await client.query(
-            'UPDATE tasks SET title = $2, description = $3, status = $4 WHERE rowguid = $1 RETURNING *', 
-            [taskRowguid, title, description, status]
+            'UPDATE tasks SET title = $1, description = $2, deadline = $3, type = $4 WHERE id = $5 RETURNING *', 
+            [title, description, deadline, type, taskId]
         );
         return result.rows[0];
     } catch (error) {
-        console.error('Error updating task for employee:', error);
+        console.error('Error updating task:', error);
         throw error;
     }
 }
+
 
 // Delete a task for a specific employee
 async function deleteTaskForEmployee(taskRowguid) {
