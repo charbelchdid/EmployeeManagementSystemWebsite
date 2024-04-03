@@ -38,10 +38,10 @@ app.post('/employees/:employeeRowguid/tasks', async (req, res) => {
 // Route to update a task
 // Assuming a route for updating a task looks something like this
 app.put('/tasks/:taskId', async (req, res) => {
-    const { taskId } = req.params;
+    const { taskRowguid } = req.params;
     const { title, description, deadline, type } = req.body;
     try {
-        const updatedTask = await updateTaskForEmployee(taskId, title, description, deadline, type);
+        const updatedTask = await updateTaskForEmployee(taskRowguid, title, description, deadline, type);
         if (updatedTask) {
             res.json(updatedTask);
         } else {
