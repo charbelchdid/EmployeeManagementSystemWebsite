@@ -30,7 +30,7 @@ async function addTaskForEmployee(employeeRowguid, title, description, deadline,
 async function updateTaskForEmployee(taskRowguid, title, description, deadline, type) {
     try {
         const result = await client.query(
-            'UPDATE tasks SET title = $1, description = $2, deadline = $3, type = $4 WHERE id = $5 RETURNING *', 
+            'UPDATE tasks SET title = $1, description = $2, deadline = $3, type = $4 WHERE rowguid = $5 RETURNING *', 
             [title, description, deadline, type, taskRowguid]
         );
         return result.rows[0];
