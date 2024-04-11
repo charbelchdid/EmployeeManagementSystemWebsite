@@ -1,8 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { getTasksByEmployee, addTaskForEmployee, updateTaskForEmployee, deleteTaskForEmployee } = require('./tasks');
-const { getAllEmployees, addEmployee, updateEmployee, deleteEmployee,getEmployeeByRowguid } = require('./employees');
+const { getAllEmployees, addEmployee, updateEmployee, deleteEmployee, getEmployeeByRowguid } = require('./employees');
 const cors = require('cors');
+const moment = require('moment'); // Add moment for date validation
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -10,8 +11,13 @@ app.use(cors())
 
 app.use(bodyParser.json());
 
+// Validate date in "DD-MM-YYYY" format or allow null
+const validateDate = (date) => {
+    return !date || moment(date, "DD-MM-YYYY", true).isValid();
+}
+
 // Route to get all tasks for a specific employee
-app.get('/employees/:employeeRowguid/tasks',  async(req, res) => {
+app.get('/employees/:employeeRowguid/tasks', async (req, res) => {
     const { employeeRowguid } = req.params;
     try {
         const tasks = await getTasksByEmployee(employeeRowguid);
@@ -23,10 +29,15 @@ app.get('/employees/:employeeRowguid/tasks',  async(req, res) => {
 
 // Route to add a new task for a specific employee
 app.post('/employees/:employeeRowguid/tasks', async (req, res) => {
-    const { title, description,start, deadline, type } = req.body;
+    const { title, description, start, deadline, type } = req.body;
     const { employeeRowguid } = req.params;
+
+    if (!validateDate(start) || !validateDate(deadline)) {
+        return res.status(400).json({ error: 'Invalid date format. Please use "DD-MM-YYYY".' });
+    }
+
     try {
-        const newTask = await addTaskForEmployee(employeeRowguid, title, description,start, deadline, type);
+        const newTask = await addTaskForEmployee(employeeRowguid, title, description, start, deadline, type);
         res.status(201).json(newTask);
     } catch (error) {
         console.error('Failed to add new task:', error);
@@ -34,14 +45,17 @@ app.post('/employees/:employeeRowguid/tasks', async (req, res) => {
     }
 });
 
-
 // Route to update a task
-// Assuming a route for updating a task looks something like this
 app.put('/tasks/:taskRowguid', async (req, res) => {
     const { taskRowguid } = req.params;
     const { title, description, start, deadline, type } = req.body;
+
+    if (!validateDate(start) || !validateDate(deadline)) {
+        return res.status(400).json({ error: 'Invalid date format. Please use "DD-MM-YYYY".' });
+    }
+
     try {
-        const updatedTask = await updateTaskForEmployee(taskRowguid, title,  description, start, deadline, type);
+        const updatedTask = await updateTaskForEmployee(taskRowguid, title, description, start, deadline, type);
         if (updatedTask) {
             res.json(updatedTask);
         } else {
@@ -52,6 +66,7 @@ app.put('/tasks/:taskRowguid', async (req, res) => {
         res.status(500).json({ error: 'Failed to update task' });
     }
 });
+
 
 
 // Route to delete a task
