@@ -12,7 +12,7 @@ function parseDate(dateInput) {
 
 // Adjusted formatDate to ensure it doesn't fail on null values
 function formatDate(date) {
-    return date ? moment(date).format("DD MMMM YYYY") : null;
+    return date ? moment(date).format("DD-MM-YYYY") : null;
 }
 
 async function getTasksByEmployee(employeeRowguid) {
