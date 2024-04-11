@@ -27,10 +27,10 @@ async function addTaskForEmployee(employeeRowguid, title, description, deadline,
 }
 
 // Assuming an updateTaskForEmployee function exists and needs updating
-async function updateTaskForEmployee(taskRowguid, title, description, deadline, type) {
+async function updateTaskForEmployee(taskRowguid, title, description, start, deadline, type) {
     try {
         const result = await client.query(
-            'UPDATE tasks SET title = $1, description = $2, deadline = $3, type = $4 WHERE rowguid = $5 RETURNING *', 
+            'UPDATE tasks SET title = $1, description = $2, start=$3, deadline = $4, type = $5 WHERE rowguid = $6 RETURNING *', 
             [title, description, deadline, type, taskRowguid]
         );
         return result.rows[0];
