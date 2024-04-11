@@ -23,10 +23,10 @@ app.get('/employees/:employeeRowguid/tasks',  async(req, res) => {
 
 // Route to add a new task for a specific employee
 app.post('/employees/:employeeRowguid/tasks', async (req, res) => {
-    const { title, description, deadline, type } = req.body;
+    const { title, description,start, deadline, type } = req.body;
     const { employeeRowguid } = req.params;
     try {
-        const newTask = await addTaskForEmployee(employeeRowguid, title, description, deadline, type);
+        const newTask = await addTaskForEmployee(employeeRowguid, title, description,start, deadline, type);
         res.status(201).json(newTask);
     } catch (error) {
         console.error('Failed to add new task:', error);
@@ -39,9 +39,9 @@ app.post('/employees/:employeeRowguid/tasks', async (req, res) => {
 // Assuming a route for updating a task looks something like this
 app.put('/tasks/:taskRowguid', async (req, res) => {
     const { taskRowguid } = req.params;
-    const { title, description, deadline, type } = req.body;
+    const { title, description, start, deadline, type } = req.body;
     try {
-        const updatedTask = await updateTaskForEmployee(taskRowguid, title, description, deadline, type);
+        const updatedTask = await updateTaskForEmployee(taskRowguid, title, start, description, deadline, type);
         if (updatedTask) {
             res.json(updatedTask);
         } else {
