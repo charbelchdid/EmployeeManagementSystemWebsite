@@ -1,14 +1,18 @@
 const client = require('./db');
 const moment = require('moment'); // We'll use moment.js for date parsing and formatting
 
-// Helper function to parse date from "DD-MM-YYYY" to Date object
-function parseDate(dateStr) {
-    return dateStr ? moment(dateStr, "DD-MM-YYYY").toDate() : null;
+// Adjusted parseDate to handle both string and Date inputs
+function parseDate(dateInput) {
+    if (!dateInput) return null; // If no input, return null
+    if (dateInput instanceof Date) return dateInput; // If already a Date, return as is
+    // If a string, attempt to parse it
+    const parsedDate = moment(dateInput, "DD-MM-YYYY", true);
+    return parsedDate.isValid() ? parsedDate.toDate() : null;
 }
 
-// Helper function to format date from Date object to "DD MMMM YYYY"
+// Adjusted formatDate to ensure it doesn't fail on null values
 function formatDate(date) {
-    return moment(date).format("DD MMMM YYYY");
+    return date ? moment(date).format("DD MMMM YYYY") : null;
 }
 
 async function getTasksByEmployee(employeeRowguid) {
