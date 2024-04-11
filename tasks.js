@@ -49,7 +49,7 @@ async function getTasksByEmployee(employeeRowguid) {
         return tasks;
     } catch (error) {
         console.error('Error fetching tasks for employee:', error);
-        throw error;
+        throw error; 
     }
 }
 
