@@ -17,19 +17,42 @@ function formatDate(date) {
 
 async function getTasksByEmployee(employeeRowguid) {
     try {
-        const result = await client.query('SELECT * FROM tasks WHERE employee_rowguid = $1', [employeeRowguid]);
-        // Format dates in the result set
-        const formattedRows = result.rows.map(task => ({
+        const query = `
+            SELECT 
+                t.rowguid AS task_rowguid,
+                t.title,
+                t.description,
+                t.start,
+                t.deadline,
+                t.type,
+                json_agg(json_build_object('employeeRowguid', e.rowguid, 'name', e.name, 'percentage', ta.percentage)) AS assignments
+            FROM 
+                tasks t
+            INNER JOIN 
+                task_assignments ta ON t.rowguid = ta.task_rowguid
+            INNER JOIN 
+                employees e ON ta.employee_rowguid = e.rowguid
+            WHERE 
+                t.employee_rowguid = $1
+            GROUP BY 
+                t.rowguid
+        `;
+        
+        const result = await client.query(query, [employeeRowguid]);
+        // Format the task start and deadline dates, if necessary, before returning
+        const tasks = result.rows.map(task => ({
             ...task,
-            start: formatDate(task.start),
-            deadline: task.deadline ? formatDate(task.deadline) : null // Check if deadline exists before formatting
+            start: formatDate(task.start), // Assuming you have a formatDate function defined as before
+            deadline: formatDate(task.deadline)
         }));
-        return formattedRows;
+
+        return tasks;
     } catch (error) {
         console.error('Error fetching tasks for employee:', error);
         throw error;
     }
 }
+
 
 async function addTaskForEmployee(employeeRowguid, title, description, startStr, deadlineStr, type) {
     let start = parseDate(startStr) || new Date(); // Use current date/time if start is not provided
