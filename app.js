@@ -14,19 +14,18 @@ app.use(bodyParser.json());
 
 // Enhanced date validation to support both "DD-MM-YYYY" strings and Date objects
 const validateAndParseDate = (dateInput) => {
-    // If it's already a Date object, we assume it's valid
-    if (dateInput instanceof Date && !isNaN(dateInput.getTime())) {
+    // Check if dateInput is already a Date object and valid
+    if (dateInput instanceof Date && !isNaN(dateInput)) {
         return { isValid: true, date: dateInput };
     }
-  
-    // If it's a string, validate it's in the "YYYY-MM-DD" format
-    if (typeof dateInput === 'string' && moment(dateInput, "YYYY-MM-DD", true).isValid()) {
-        // Convert to a Date object for consistent handling later
-        // Note: This creates a Date at 00:00:00 in local time zone
-        return { isValid: true, date: moment(dateInput, "YYYY-MM-DD").toDate() };
+
+    // Check if dateInput is a string and matches ISO 8601 format
+    if (typeof dateInput === 'string' && moment(dateInput, moment.ISO_8601, true).isValid()) {
+        // Parse the string to a Date object
+        return { isValid: true, date: new Date(dateInput) };
     }
 
-    // If none of the above, return as invalid
+    // If none of the above, return invalid
     return { isValid: false, date: null };
 };
 
