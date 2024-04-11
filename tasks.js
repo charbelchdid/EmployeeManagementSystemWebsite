@@ -1,3 +1,4 @@
+
 const client = require('./db');
 
 // Get all tasks for a specific employee
@@ -13,31 +14,37 @@ async function getTasksByEmployee(employeeRowguid) {
 
 // Add a new task for a specific employee
 // Updated addTaskForEmployee function to include deadline and type
-async function addTaskForEmployee(employeeRowguid, title, description, deadline, type) {
-    try {
-        const result = await client.query(
-            'INSERT INTO tasks (title, description, deadline, type, employee_rowguid) VALUES ($1, $2, $3, $4, $5) RETURNING *', 
-            [title, description, deadline, type, employeeRowguid]
-        );
-        return result.rows[0];
-    } catch (error) {
-        console.error('Error adding task for employee:', error);
-        throw error;
-    }
+async function addTaskForEmployee(employeeRowguid, title, description, start, deadline, type) {
+        // If start is not provided, use the current date/time
+        if (!start) {
+            start = new Date();
+        }
+        try {
+            const result = await client.query(
+                'INSERT INTO tasks (title, description, start, deadline, type, employee_rowguid) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', 
+                [title, description, start, deadline, type, employeeRowguid]
+            );
+            return result.rows[0];
+        } catch (error) {
+            console.error('Error adding task for employee:', error);
+            throw error;
+        }
+
 }
 
 // Assuming an updateTaskForEmployee function exists and needs updating
-async function updateTaskForEmployee(taskRowguid, title, description, deadline, type) {
-    try {
-        const result = await client.query(
-            'UPDATE tasks SET title = $1, description = $2, deadline = $3, type = $4 WHERE rowguid = $5 RETURNING *', 
-            [title, description, deadline, type, taskRowguid]
-        );
-        return result.rows[0];
-    } catch (error) {
-        console.error('Error updating task:', error);
-        throw error;
-    }
+async function updateTaskForEmployee(taskRowguid, title, description, start, deadline, type) {
+        // Handle start and deadline update with appropriate data types
+        try {
+            const result = await client.query(
+                'UPDATE tasks SET title = $1, description = $2, start = COALESCE($3, start), deadline = $4, type = $5 WHERE rowguid = $6 RETURNING *', 
+                [title, description, start, deadline, type, taskRowguid]
+            );
+            return result.rows[0];
+        } catch (error) {
+            console.error('Error updating task:', error);
+            throw error;
+        }
 }
 
 
@@ -53,3 +60,4 @@ async function deleteTaskForEmployee(taskRowguid) {
 }
 
 module.exports = { getTasksByEmployee, addTaskForEmployee, updateTaskForEmployee, deleteTaskForEmployee };
+
