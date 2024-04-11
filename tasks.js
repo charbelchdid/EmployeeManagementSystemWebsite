@@ -31,7 +31,7 @@ async function getTasksByEmployee(employeeRowguid) {
             INNER JOIN 
                 task_assignments ta ON t.rowguid = ta.task_rowguid
             INNER JOIN 
-                employees e ON ta.employee_rowguid = e.rowguid
+                employee e ON ta.employee_rowguid = e.rowguid
             WHERE 
                 t.employee_rowguid = $1
             GROUP BY 
