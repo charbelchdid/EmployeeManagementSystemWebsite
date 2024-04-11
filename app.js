@@ -14,19 +14,13 @@ app.use(bodyParser.json());
 
 // Enhanced date validation to support both "DD-MM-YYYY" strings and Date objects
 const validateAndParseDate = (dateInput) => {
-    // Check if dateInput is already a Date object and valid
-    if (dateInput instanceof Date && !isNaN(dateInput)) {
-        return { isValid: true, date: dateInput };
+    if (!dateInput) return { isValid: true, date: null }; // Allow null dates
+    if (dateInput instanceof Date) return { isValid: true, date: dateInput }; // Directly pass through Date objects
+    if (typeof dateInput === 'string' && moment(dateInput, "DD-MM-YYYY", true).isValid()) {
+        // Convert valid date strings to Date objects
+        return { isValid: true, date: moment(dateInput, "DD-MM-YYYY").toDate() };
     }
-
-    // Check if dateInput is a string and matches ISO 8601 format
-    if (typeof dateInput === 'string' && moment(dateInput, moment.ISO_8601, true).isValid()) {
-        // Parse the string to a Date object
-        return { isValid: true, date: new Date(dateInput) };
-    }
-
-    // If none of the above, return invalid
-    return { isValid: false, date: null };
+    return { isValid: false }; // Invalid format
 };
 
 // Route to get all tasks for a specific employee
