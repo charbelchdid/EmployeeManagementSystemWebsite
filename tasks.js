@@ -25,7 +25,7 @@ async function getTasksByEmployee(employeeRowguid) {
                 t.start,
                 t.deadline,
                 t.type,
-                json_agg(json_build_object('employeeRowguid', e.rowguid, 'name', e.name, 'percentage', ta.percentage)) AS assignments
+                json_agg(json_build_object('employeeRowguid', e.rowguid, 'name', e.employee_name, 'percentage', ta.percentage)) AS assignments
             FROM 
                 tasks t
             INNER JOIN 
