@@ -37,31 +37,7 @@ app.get('/employees/:employeeRowguid/tasks', async (req, res) => {
 // Route to add a new task for a specific employee
 app.post('/employees/:employeeRowguid/tasks', async (req, res) => {
     const { title, description, start, deadline, type } = req.body;
-    const { taskRowguid } = req.params;
-
-    // Validate and parse start and deadline dates
-    const { isValid: isValidStart, date: startStr } = validateAndParseDate(start);
-    const { isValid: isValidDeadline, date: deadlineStr } = validateAndParseDate(deadline);
-
-    if (!isValidStart || !isValidDeadline) {
-        return res.status(400).json({ error: 'Invalid date format. Please use "DD-MM-YYYY" or a valid Date object.' });
-    }
-
-    try {
-        // Assuming addTaskForEmployee now expects Date objects or null for start and deadline
-        const newTask = await addTaskForEmployee(taskRowguid, title, description, startStr, deadlineStr, type);
-        res.status(201).json(newTask);
-    } catch (error) {
-        console.error('Failed to add new task:', error);
-        res.status(500).json({ error: 'Failed to add new task' });
-    }
-});
-
-
-// Route to update a task
-app.post('/employees/:taskRowguid/tasks', async (req, res) => {
-    const { title, description, start, deadline, type } = req.body;
-    const { taskRowguid } = req.params;
+    const { employeeRowguid } = req.params;
 
     // Validate and parse start and deadline dates
     const { isValid: isValidStart, date: startDate } = validateAndParseDate(start);
@@ -72,12 +48,40 @@ app.post('/employees/:taskRowguid/tasks', async (req, res) => {
     }
 
     try {
-        const newTask = await addTaskForEmployee(taskRowguid, title, description, startDate, deadlineDate, type);
+        // Assuming addTaskForEmployee now expects Date objects or null for start and deadline
+        const newTask = await addTaskForEmployee(employeeRowguid, title, description, startDate, deadlineDate, type);
         res.status(201).json(newTask);
     } catch (error) {
         console.error('Failed to add new task:', error);
-        // Send a response to avoid hanging the request
         res.status(500).json({ error: 'Failed to add new task' });
+    }
+});
+
+
+// Route to update a task
+app.put('/tasks/:taskRowguid', async (req, res) => {
+    const { taskRowguid } = req.params;
+    const { title, description, start, deadline, type } = req.body;
+
+    // Validate and parse start and deadline dates using the same validateAndParseDate function
+    const { isValid: isValidStart, date: startDate } = validateAndParseDate(start);
+    const { isValid: isValidDeadline, date: deadlineDate } = validateAndParseDate(deadline);
+
+    if (!isValidStart || !isValidDeadline) {
+        return res.status(400).json({ error: 'Invalid date format. Please use "DD-MM-YYYY" or a valid Date object.' });
+    }
+
+    try {
+        // Now passing the parsed dates (startDate and deadlineDate) which are either Date objects or null
+        const updatedTask = await updateTaskForEmployee(taskRowguid, title, description, startDate, deadlineDate, type);
+        if (updatedTask) {
+            res.json(updatedTask);
+        } else {
+            res.status(404).json({ error: 'Task not found' });
+        }
+    } catch (error) {
+        console.error('Failed to update task:', error);
+        res.status(500).json({ error: 'Failed to update task' });
     }
 });
 
