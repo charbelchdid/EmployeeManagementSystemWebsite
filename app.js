@@ -41,7 +41,7 @@ app.put('/tasks/:taskRowguid', async (req, res) => {
     const { taskRowguid } = req.params;
     const { title, description, start, deadline, type } = req.body;
     try {
-        const updatedTask = await updateTaskForEmployee(taskRowguid, title, start, description, deadline, type);
+        const updatedTask = await updateTaskForEmployee(taskRowguid, title,  description, start, deadline, type);
         if (updatedTask) {
             res.json(updatedTask);
         } else {
