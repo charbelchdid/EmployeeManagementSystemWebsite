@@ -16,6 +16,10 @@ app.use(bodyParser.json());
 const validateAndParseDate = (dateInput) => {
     if (!dateInput) return { isValid: true, date: null }; // Allow null dates
     if (dateInput instanceof Date) return { isValid: true, date: dateInput }; // Directly pass through Date objects
+    if (moment(dateInput, moment.ISO_8601, true).isValid()) {
+        // Parse the string to a Date object
+        return { isValid: true, date: new Date(dateInput) };
+    }
     if (typeof dateInput === 'string' && moment(dateInput, "DD-MM-YYYY", true).isValid()) {
         // Convert valid date strings to Date objects
         return { isValid: true, date: moment(dateInput, "DD-MM-YYYY").toDate() };
