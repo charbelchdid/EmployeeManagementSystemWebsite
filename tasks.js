@@ -144,10 +144,10 @@ async function addAssignment(assignment) {
         'INSERT INTO task_assignments (task_rowguid, employee_rowguid, percentage) VALUES ($1, $2, $3) RETURNING *',
         [task_rowguid, employee_rowguid, percentage]
       );
-      res.status(201).json(result.rows[0]);
+      return result.rows[0];
     } catch (error) {
-      console.error('Failed to add assignment:', error);
-      res.status(500).json({ error: 'Internal server error' });
+        console.error('Error adding new assignment:', error);
+        throw error;
     }
 }
 
