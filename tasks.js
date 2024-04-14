@@ -98,7 +98,7 @@ async function deleteTaskForEmployee(taskRowguid) {
     }
 }
 
-async function getProjectTask() {
+async function getProjectTask(rowguid) {
     try {
         const result = await pool.query('SELECT * FROM tasks WHERE project_rowguid = $1', [rowguid]);
         const tasks = result.rows.map(task => ({
