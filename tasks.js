@@ -137,5 +137,31 @@ async function getProjectTask(rowguid) {
         throw error;     }
 }
 
-module.exports = { getTasksByEmployee, addTask, updateTaskForEmployee, deleteTaskForEmployee,getProjectTask };
+async function addAssignment(assignment) {
+    const {task_rowguid, employee_rowguid, percentage}=assignment;
+    try {
+      const result = await client.query(
+        'INSERT INTO task_assignments (task_rowguid, employee_rowguid, percentage) VALUES ($1, $2, $3) RETURNING *',
+        [task_rowguid, employee_rowguid, percentage]
+      );
+      res.status(201).json(result.rows[0]);
+    } catch (error) {
+      console.error('Failed to add assignment:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+async function deleteAssignment(assignment) {
+    const {task_rowguid, employee_rowguid, percentage}=assignment;
+    try {
+        const result = await client.query('DELETE FROM task_assignments WHERE task_rowguid = $1 AND employee_rowguid = $2 RETURNING *', [task_rowguid,employee_rowguid]);
+        return result.rows[0];
+    } catch (error) {
+        console.error('Error  deleting task for employee:', error);
+        throw error;
+    }
+}
+
+
+module.exports = { getTasksByEmployee, addTask, updateTaskForEmployee, deleteTaskForEmployee,getProjectTask, addAssignment, deleteAssignment};
 

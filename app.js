@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { getTasksByEmployee, addTask, updateTaskForEmployee, deleteTaskForEmployee, getProjectTask } = require('./tasks');
+const { getTasksByEmployee, addTask, updateTaskForEmployee, deleteTaskForEmployee, getProjectTask, addAssignment, deleteAssignment } = require('./tasks');
 const { getAllEmployees, addEmployee, updateEmployee, deleteEmployee, getEmployeeByRowguid } = require('./employees');
 const { getAllProjects, addProject, updateProject, deleteProject}= require('./projects');
 const cors = require('cors');
@@ -208,6 +208,25 @@ app.get('/projects', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
   });
+
+  app.post('/assignments', async (req, res) => {
+    try {
+        const project = await addAssignment(req.body);
+        res.json(project);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  app.delete('/assignments', async (req, res) => {
+    try {
+        const project = await deleteAssignment(req.body);
+        res.json({ message: 'Project deleted successfully', project });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
+  
   
   
 
