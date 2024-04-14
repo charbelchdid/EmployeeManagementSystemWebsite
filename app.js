@@ -5,6 +5,7 @@ const { getAllEmployees, addEmployee, updateEmployee, deleteEmployee, getEmploye
 const { getAllProjects, addProject, updateProject, deleteProject}= require('./projects');
 const cors = require('cors');
 const moment = require('moment'); // Add moment for date validation
+const eventsRouter = require('./events');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -227,7 +228,7 @@ app.get('/projects', async (req, res) => {
   });
   
   
-  
+  app.use('/managerEvents', eventsRouter);
   
 
 
