@@ -156,6 +156,19 @@ app.get('/employees/:rowguid', async (req, res) => {
 });
 
 
+
+
+app.get('/projects', async (req, res) => {
+    try {
+      const result = await pool.query('SELECT rowguid, name, deadline, progress FROM projects');
+      res.json(result.rows);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server error');
+    }
+  });
+
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
