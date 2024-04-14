@@ -12,7 +12,7 @@ async function getAllProjects() {
 async function addProject(project) {
     const { name, deadline } = project;
     try {
-      const result = await client.query('INSERT INTO projects (name, deadline) VALUES ($1, TO_DATE($2, \'DD-MM-YYYY\')) RETURNING *', [name, deadline]);
+      const result = await client.query('INSERT INTO projects (name, deadline) VALUES ($1, TO_DATE($2, \'YYYY-MM-DD\')) RETURNING *', [name, deadline]);
       return result.rows[0];
     } catch (error) {
         console.error('Error adding new project:', error);
