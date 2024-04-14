@@ -100,7 +100,7 @@ async function deleteTaskForEmployee(taskRowguid) {
 
 async function getProjectTask(rowguid) {
     try {
-        const result = await pool.query('SELECT * FROM tasks WHERE project_rowguid = $1', [rowguid]);
+        const result = await client.query('SELECT * FROM tasks WHERE project_rowguid = $1', [rowguid]);
         const tasks = result.rows.map(task => ({
             ...task,
             start: formatDate(task.start), // Assuming you have a formatDate function defined as before
