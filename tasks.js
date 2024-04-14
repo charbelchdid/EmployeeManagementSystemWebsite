@@ -102,23 +102,25 @@ async function getProjectTask(rowguid) {
     try {
         const result = await client.query(`
         SELECT 
-                t.rowguid AS task_rowguid,
-                t.title,
-                t.description,
-                t.start,
-                t.deadline,
-                t.type,
-                json_agg(json_build_object('employeeRowguid', e.rowguid, 'name', e.employee_name, 'percentage', ta.percentage)) AS assignments
-            FROM 
-                tasks t
-            INNER JOIN 
-                task_assignments ta ON t.rowguid = ta.task_rowguid
-            INNER JOIN 
-                employee e ON ta.employee_rowguid = e.rowguid
-            WHERE 
-                t.project_rowguid = $1
-            GROUP BY 
-                t.rowguid
+            t.rowguid AS task_rowguid,
+            t.title,
+            t.description,
+            t.start,
+            t.deadline,
+            t.type,
+            json_agg(
+                json_build_object('employeeRowguid', e.rowguid, 'name', e.employee_name, 'percentage', ta.percentage)
+            ) FILTER (WHERE e.rowguid IS NOT NULL) AS assignments
+        FROM 
+            tasks t
+        LEFT JOIN 
+            task_assignments ta ON t.rowguid = ta.task_rowguid
+        LEFT JOIN 
+            employee e ON ta.employee_rowguid = e.rowguid
+        WHERE 
+            t.project_rowguid = $1
+        GROUP BY 
+            t.rowguid
         `, [rowguid]);
         const tasks = result.rows.map(task => ({
             ...task,
