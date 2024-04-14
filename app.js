@@ -160,13 +160,57 @@ app.get('/employees/:rowguid', async (req, res) => {
 
 app.get('/projects', async (req, res) => {
     try {
-      const result = await pool.query('SELECT rowguid, name, deadline, progress FROM projects');
+      const result = await pool.query('SELECT * FROM projects');
       res.json(result.rows);
     } catch (err) {
       console.error(err);
       res.status(500).send('Server error');
     }
   });
+  app.post('/projects', async (req, res) => {
+    const { name, deadline } = req.body;
+    try {
+      const result = await pool.query('INSERT INTO projects (name, deadline) VALUES ($1, TO_DATE($2, \'DD-MM-YYYY\')) RETURNING *', [name, deadline]);
+      res.status(201).json(result.rows[0]);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server error');
+    }
+  });
+  
+  // Update an existing project
+  app.put('/projects/:rowguid', async (req, res) => {
+    const { rowguid } = req.params;
+    const { name, deadline } = req.body;
+    try {
+      const result = await pool.query('UPDATE projects SET name = $1, deadline = TO_DATE($2, \'DD-MM-YYYY\') WHERE rowguid = $3 RETURNING *', [name, deadline, rowguid]);
+      if (result.rows.length === 0) {
+        res.status(404).send('Project not found');
+      } else {
+        res.json(result.rows[0]);
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server error');
+    }
+  });
+  
+  // Delete a project
+  app.delete('/projects/:rowguid', async (req, res) => {
+    const { rowguid } = req.params;
+    try {
+      const result = await pool.query('DELETE FROM projects WHERE rowguid = $1 RETURNING *', [rowguid]);
+      if (result.rows.length === 0) {
+        res.status(404).send('Project not found');
+      } else {
+        res.json(result.rows[0]);
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server error');
+    }
+  });
+  
 
 
 app.listen(port, () => {
