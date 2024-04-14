@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { getTasksByEmployee, addTaskForEmployee, updateTaskForEmployee, deleteTaskForEmployee, getProjectTask } = require('./tasks');
+const { getTasksByEmployee, addTask, updateTaskForEmployee, deleteTaskForEmployee, getProjectTask } = require('./tasks');
 const { getAllEmployees, addEmployee, updateEmployee, deleteEmployee, getEmployeeByRowguid } = require('./employees');
 const { getAllProjects, addProject, updateProject, deleteProject}= require('./projects');
 const cors = require('cors');
@@ -40,9 +40,8 @@ app.get('/employees/:employeeRowguid/tasks', async (req, res) => {
 });
 
 // Route to add a new task for a specific employee
-app.post('/employees/:employeeRowguid/tasks', async (req, res) => {
+app.post('/tasks', async (req, res) => {
     const { title, description, start, deadline, type } = req.body;
-    const { employeeRowguid } = req.params;
 
     // Validate and parse start and deadline dates
     const { isValid: isValidStart, date: startDate } = validateAndParseDate(start);
@@ -54,7 +53,7 @@ app.post('/employees/:employeeRowguid/tasks', async (req, res) => {
 
     try {
         // Assuming addTaskForEmployee now expects Date objects or null for start and deadline
-        const newTask = await addTaskForEmployee(employeeRowguid, title, description, startDate, deadlineDate, type);
+        const newTask = await addTask(title, description, startDate, deadlineDate, type);
         res.status(201).json(newTask);
     } catch (error) {
         console.error('Failed to add new task:', error);
