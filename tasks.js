@@ -18,24 +18,28 @@ function formatDate(date) {
 async function getTasksByEmployee(employeeRowguid) {
     try {
         const query = `
-            SELECT 
-                t.rowguid AS task_rowguid,
-                t.title,
-                t.description,
-                t.start,
-                t.deadline,
-                t.type,
-                json_agg(json_build_object('employeeRowguid', e.rowguid, 'name', e.employee_name, 'percentage', ta.percentage)) AS assignments
-            FROM 
-                tasks t
-            INNER JOIN 
-                task_assignments ta ON t.rowguid = ta.task_rowguid
-            INNER JOIN 
-                employee e ON ta.employee_rowguid = e.rowguid
-            WHERE 
-                t.employee_rowguid = $1
-            GROUP BY 
-                t.rowguid
+        SELECT 
+            t.rowguid AS task_rowguid,
+            t.title,
+            t.description,
+            t.start,
+            t.deadline,
+            t.type,
+            json_agg(json_build_object('employeeRowguid', e.rowguid, 'name', e.employee_name, 'percentage', ta.percentage)) AS assignments
+        FROM 
+            tasks t
+        INNER JOIN 
+            task_assignments ta ON t.rowguid = ta.task_rowguid
+        INNER JOIN 
+            employee e ON ta.employee_rowguid = e.rowguid
+        WHERE 
+            t.rowguid IN (
+                SELECT task_rowguid 
+                FROM task_assignments 
+                WHERE employee_rowguid = $1
+            )
+        GROUP BY 
+            t.rowguid, t.title, t.description, t.start, t.deadline, t.type
         `;
         
         const result = await client.query(query, [employeeRowguid]);
