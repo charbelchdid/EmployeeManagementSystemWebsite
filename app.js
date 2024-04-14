@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { getTasksByEmployee, addTaskForEmployee, updateTaskForEmployee, deleteTaskForEmployee } = require('./tasks');
+const { getTasksByEmployee, addTaskForEmployee, updateTaskForEmployee, deleteTaskForEmployee, getProjectTask } = require('./tasks');
 const { getAllEmployees, addEmployee, updateEmployee, deleteEmployee, getEmployeeByRowguid } = require('./employees');
 const { getAllProjects, addProject, updateProject, deleteProject}= require('./projects');
 const cors = require('cors');
@@ -195,6 +195,21 @@ app.get('/projects', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
   });
+
+  app.get('/tasks/:rowguid', async (req, res) => {
+    const { rowguid } = req.params;
+    try {
+        const task = await getProjectTask(rowguid);
+        if(task) {
+            res.json(task);
+        } else {
+            res.status(404).json({ message: 'Task not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
   
 
 

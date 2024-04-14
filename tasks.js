@@ -98,5 +98,20 @@ async function deleteTaskForEmployee(taskRowguid) {
     }
 }
 
-module.exports = { getTasksByEmployee, addTaskForEmployee, updateTaskForEmployee, deleteTaskForEmployee };
+async function getProjectTask() {
+    try {
+        const result = await pool.query('SELECT * FROM tasks WHERE project_rowguid = $1', [rowguid]);
+        const tasks = result.rows.map(task => ({
+            ...task,
+            start: formatDate(task.start), // Assuming you have a formatDate function defined as before
+            deadline: formatDate(task.deadline)
+        }));
+        return tasks;
+    } catch (error) {
+        console.error('Error fetching tasls for project:', error);
+        throw error;
+    }
+}
+
+module.exports = { getTasksByEmployee, addTaskForEmployee, updateTaskForEmployee, deleteTaskForEmployee,getProjectTask };
 

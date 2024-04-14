@@ -41,5 +41,6 @@ async function deleteProject(rowguid) {
     }
 }
 
+  
 
 module.exports = { getAllProjects, addProject, updateProject, deleteProject};
