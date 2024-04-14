@@ -93,7 +93,7 @@ async function deleteTaskForEmployee(taskRowguid) {
         const result = await client.query('DELETE FROM tasks WHERE rowguid = $1 RETURNING *', [taskRowguid]);
         return result.rows[0];
     } catch (error) {
-        console.error('Error deleting task for employee:', error);
+        console.error('Error  deleting task for employee:', error);
         throw error;
     }
 }
@@ -109,8 +109,7 @@ async function getProjectTask() {
         return tasks;
     } catch (error) {
         console.error('Error fetching tasls for project:', error);
-        throw error;
-    }
+        throw error;     }
 }
 
 module.exports = { getTasksByEmployee, addTaskForEmployee, updateTaskForEmployee, deleteTaskForEmployee,getProjectTask };
