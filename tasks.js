@@ -58,14 +58,14 @@ async function getTasksByEmployee(employeeRowguid) {
 }
 
 
-async function addTask( title, description, startStr, deadlineStr, type) {
+async function addTask(project_rowguid, title, description, startStr, deadlineStr, type) {
     let start = parseDate(startStr) || new Date(); // Use current date/time if start is not provided
     let deadline = parseDate(deadlineStr);
 
     try {
         const result = await client.query(
-            'INSERT INTO tasks (title, description, start, deadline, type) VALUES ($1, $2, $3, $4, $5) RETURNING *', 
-            [title, description, start, deadline, type]
+            'INSERT INTO tasks (title, description, start, deadline, type, project_rowguid) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', 
+            [title, description, start, deadline, type, project_rowguid]
         );
         return result.rows[0];
     } catch (error) {

@@ -40,9 +40,9 @@ app.get('/employees/:employeeRowguid/tasks', async (req, res) => {
 });
 
 // Route to add a new task for a specific employee
-app.post('/tasks', async (req, res) => {
+app.post('/tasks/:projectrowguid', async (req, res) => {
     const { title, description, start, deadline, type } = req.body;
-
+    const { projectrowguid } = req.params;
     // Validate and parse start and deadline dates
     const { isValid: isValidStart, date: startDate } = validateAndParseDate(start);
     const { isValid: isValidDeadline, date: deadlineDate } = validateAndParseDate(deadline);
@@ -53,7 +53,7 @@ app.post('/tasks', async (req, res) => {
 
     try {
         // Assuming addTaskForEmployee now expects Date objects or null for start and deadline
-        const newTask = await addTask(title, description, startDate, deadlineDate, type);
+        const newTask = await addTask(projectrowguid, title, description, startDate, deadlineDate, type);
         res.status(201).json(newTask);
     } catch (error) {
         console.error('Failed to add new task:', error);
