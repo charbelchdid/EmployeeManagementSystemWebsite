@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { getTasksByEmployee, addTaskForEmployee, updateTaskForEmployee, deleteTaskForEmployee } = require('./tasks');
 const { getAllEmployees, addEmployee, updateEmployee, deleteEmployee, getEmployeeByRowguid } = require('./employees');
+const { getAllProjects, addProject, updateProject, deleteProject}= require('./projects');
 const cors = require('cors');
 const moment = require('moment'); // Add moment for date validation
 
@@ -157,57 +158,41 @@ app.get('/employees/:rowguid', async (req, res) => {
 
 
 
-
 app.get('/projects', async (req, res) => {
     try {
-      const result = await pool.query('SELECT * FROM projects');
-      res.json(result.rows);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send('Server error');
+        const projects = await getAllProjects();
+        res.json(projects);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
     }
-  });
+});
+  
   app.post('/projects', async (req, res) => {
-    const { name, deadline } = req.body;
     try {
-      const result = await pool.query('INSERT INTO projects (name, deadline) VALUES ($1, TO_DATE($2, \'DD-MM-YYYY\')) RETURNING *', [name, deadline]);
-      res.status(201).json(result.rows[0]);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send('Server error');
+        const project = await addProject(req.body);
+        res.status(201).json(project);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
     }
   });
   
-  // Update an existing project
   app.put('/projects/:rowguid', async (req, res) => {
     const { rowguid } = req.params;
-    const { name, deadline } = req.body;
     try {
-      const result = await pool.query('UPDATE projects SET name = $1, deadline = TO_DATE($2, \'DD-MM-YYYY\') WHERE rowguid = $3 RETURNING *', [name, deadline, rowguid]);
-      if (result.rows.length === 0) {
-        res.status(404).send('Project not found');
-      } else {
-        res.json(result.rows[0]);
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).send('Server error');
+        const project = await updateProject(rowguid, req.body);
+        res.json(project);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
     }
   });
   
-  // Delete a project
   app.delete('/projects/:rowguid', async (req, res) => {
     const { rowguid } = req.params;
     try {
-      const result = await pool.query('DELETE FROM projects WHERE rowguid = $1 RETURNING *', [rowguid]);
-      if (result.rows.length === 0) {
-        res.status(404).send('Project not found');
-      } else {
-        res.json(result.rows[0]);
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).send('Server error');
+        const project = await deleteProject(rowguid);
+        res.json({ message: 'Project deleted successfully', project });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
     }
   });
   
