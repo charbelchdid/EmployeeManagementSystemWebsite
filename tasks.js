@@ -90,10 +90,10 @@ async function updateTaskForEmployee(taskRowguid, title, description, startStr, 
     }
 }
 
-
 // Delete a task for a specific employee
 async function deleteTaskForEmployee(taskRowguid) {
     try {
+        await client.query('DELETE FROM task_assignments WHERE task_rowguid = $1', [taskRowguid]);
         const result = await client.query('DELETE FROM tasks WHERE rowguid = $1 RETURNING *', [taskRowguid]);
         return result.rows[0];
     } catch (error) {
