@@ -8,6 +8,11 @@ function formatDate(dateStr) {
   const formattedDate = new Date(parts[2], parts[1] - 1, parts[0]); // Month is 0-based
   return formattedDate.toISOString().split('T')[0]; // Extract YYYY-MM-DD part
 }
+function formatDateString(dateString) {
+  const date = new Date(dateString);
+  const options = { day: '2-digit', year: '2-digit', month: 'long' };
+  return date.toLocaleDateString('en-US', options);
+}
 
 // Route to get all events
 router.get('/', async (req, res) => {
@@ -26,8 +31,14 @@ router.post('/', async (req, res) => {
   const formattedStart = formatDate(start);
   const formattedEnd = formatDate(end);
   try {
-    const { rows } = await client.query('INSERT INTO events (title, start, "end") VALUES ($1, $2, $3) RETURNING *', [title, start, end]);
-    res.status(201).json(rows[0]);
+    const { rows } = await client.query('INSERT INTO events (title, start, "end") VALUES ($1, $2, $3) RETURNING *', [title, formattedStart, formattedEnd]);
+    const formattedRow = {
+      ...rows[0],
+      start: formatDateString(rows[0].start),
+      end: formatDateString(rows[0].end)
+    };
+
+    res.status(201).json(formattedRow);
   } catch (error) {
     console.error('Error adding event:', error);
     res.status(500).json({ error: 'An error occurred while adding the event.' });
