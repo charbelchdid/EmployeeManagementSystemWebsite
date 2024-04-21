@@ -26,7 +26,7 @@ router.post('/', async (req, res) => {
   const formattedStart = formatDate(start);
   const formattedEnd = formatDate(end);
   try {
-    const { rows } = await client.query('INSERT INTO events (title, start, "end") VALUES ($1, $2, $3) RETURNING *', [title, formattedStart, formattedEnd]);
+    const { rows } = await client.query('INSERT INTO events (title, start, "end") VALUES ($1, $2, $3) RETURNING *', [title, start, end]);
     res.status(201).json(rows[0]);
   } catch (error) {
     console.error('Error adding event:', error);
