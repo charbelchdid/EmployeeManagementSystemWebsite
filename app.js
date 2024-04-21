@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { getTasksByEmployee, addTask, updateTaskForEmployee, deleteTaskForEmployee, getProjectTask, addAssignment, deleteAssignment } = require('./tasks');
-const { getAllEmployees, addEmployee, updateEmployee, deleteEmployee, getEmployeeByRowguid } = require('./employees');
+const { getAllEmployees, addEmployee, updateEmployee, deleteEmployee, getEmployeeByRowguid, getEmployeeRowguid } = require('./employees');
 const { getAllProjects, addProject, updateProject, deleteProject}= require('./projects');
 const cors = require('cors');
 const moment = require('moment'); // Add moment for date validation
@@ -89,7 +89,20 @@ app.put('/tasks/:taskRowguid', async (req, res) => {
     }
 });
 
-
+app.post('/getEmployeeRowguid', async (req, res) => {
+    try {
+        const { email } = req.body;
+        const employee = await getEmployeeRowguid(email);
+        if(employee) {
+            res.json(employee.rowguid);
+        } else {
+            res.status(404).json({ message: 'Employee not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+    
+  });
 
 
 // Route to delete a task

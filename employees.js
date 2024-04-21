@@ -56,6 +56,21 @@ async function getEmployeeByRowguid(rowguid) {
         throw error;
     }
 }
+async function getEmployeeRowguid(email) {
+    try {
+        // Query to fetch rowguid based on email
+        const query = `
+          SELECT rowguid
+          FROM employee
+          WHERE email = $1
+        `;
+    
+        const result = await client.query(query, [email]);
+        return result.rows[0];
+      } catch (error) {
+        console.error('Error executing query', error);
+        throw error;
+      }
+}
 
-
-module.exports = { getAllEmployees, addEmployee, updateEmployee, deleteEmployee, getEmployeeByRowguid };
+module.exports = { getAllEmployees, addEmployee, updateEmployee, deleteEmployee, getEmployeeByRowguid,getEmployeeRowguid };
