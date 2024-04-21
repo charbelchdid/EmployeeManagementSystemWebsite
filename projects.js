@@ -33,6 +33,7 @@ async function updateProject(rowguid, updatedProject) {
 
 async function deleteProject(rowguid) {
     try {
+        await client.query('DELETE FROM task_assignments WHERE task_rowguid IN (SELECT rowguid FROM tasks WHERE project_rowguid = $1)',[rowguid]);
         await client.query('DELETE FROM tasks WHERE project_rowguid = $1',[rowguid]);
         const result = await client.query('DELETE FROM projects WHERE rowguid = $1 RETURNING *', [rowguid]);
         return result.rows[0];
