@@ -40,6 +40,7 @@ async function updateEmployee(rowguid, updatedEmployee) {
 
 async function deleteEmployee(rowguid) {
     try {
+        await client.query('DELETE FROM task_assignments WHERE employee_rowguid = $1',[rowguid]);
         const result = await client.query('DELETE FROM employee WHERE rowguid = $1 RETURNING *', [rowguid]);
         return result.rows[0];
     } catch (error) {
